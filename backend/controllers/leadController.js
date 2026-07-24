@@ -24,7 +24,7 @@ const createLeadSchema = z.object({
     .max(1000, "Message cannot exceed 1000 characters"),
 });
 const updateStatusSchema = z.object({
-  status: z.enum(["New", "Contacted", "Qualified", "Lost"]),
+  status: z.enum(["New", "Contacted", "Closed"]),
 });
 
 const createLead = async (req, res) => {
