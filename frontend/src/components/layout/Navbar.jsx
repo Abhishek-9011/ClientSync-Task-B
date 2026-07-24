@@ -67,11 +67,15 @@ export default function Navbar() {
           )}
         </div>
 
-        <div className="hidden md:block">
-          <Button asChild size="default">
-            <a href="/#contact">Get Started</a>
-          </Button>
-        </div>
+        <div className="hidden items-center gap-3 md:flex">
+  <Button asChild variant="outline">
+    <Link to="/login">Admin Login</Link>
+  </Button>
+
+  <Button asChild size="default">
+    <a href="/#contact">Get Started</a>
+  </Button>
+</div>
 
         <button
           className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-800 md:hidden"

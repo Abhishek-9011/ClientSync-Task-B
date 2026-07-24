@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 import {
   Search,
   Workflow,
@@ -39,6 +41,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useLeads } from "@/hooks/useLeads";
+import { toast } from "sonner";
 
 const statusBadge = {
   New: "new",
@@ -82,6 +85,13 @@ export default function Admin() {
 console.log("isLoading:", isLoading);
 console.log("error:", error);
 console.log("leads length:", leads.length);
+const navigate = useNavigate();
+
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  toast.success("Logged out successfully!");
+  navigate("/login");
+};
   return (
     <div className="min-h-screen bg-ink-50/50">
       {/* Header */}
@@ -105,22 +115,31 @@ console.log("leads length:", leads.length);
     </Link>
 
     {/* Search + Badge */}
-    <div className="flex items-center gap-3">
-      <div className="relative w-64">
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
+  <div className="flex items-center gap-3">
+  <Button
+    variant="outline"
+    onClick={handleLogout}
+    className="flex items-center gap-2"
+  >
+    <LogOut className="h-4 w-4" />
+    Logout
+  </Button>
 
-        <Input
-          placeholder="Search by name or email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
-        />
-      </div>
+  <div className="relative w-64">
+    <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
 
-      <Badge variant="dark" className="shrink-0">
-        {summary.total} total leads
-      </Badge>
-    </div>
+    <Input
+      placeholder="Search by name or email..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="pl-10"
+    />
+  </div>
+
+  <Badge variant="dark" className="shrink-0">
+    {summary.total} total leads
+  </Badge>
+</div>
   </div>
 </header>
 

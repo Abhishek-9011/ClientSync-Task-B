@@ -1,251 +1,77 @@
-# 🚀 ClientSync – LeadDesk Mini
+## 📊 Data Model
 
-A modern full-stack lead management application built with the MERN stack. ClientSync allows visitors to submit inquiries through a beautiful landing page, while administrators can efficiently manage, search, and update lead statuses from a dedicated dashboard.
+The application uses two MongoDB collections: **User** and **Lead**.
 
----
+### User Model
 
-## 🌐 Live Demo
+The `User` model is used for administrator authentication.
 
-- **Landing Page:** https://client-sync-eight.vercel.app/
-- **Admin Dashboard:** https://client-sync-eight.vercel.app/admin
+| Field | Type | Description |
+|-------|------|-------------|
+| email | String | Admin email address (unique) |
+| password | String | Hashed password using bcrypt |
+| role | String | User role (e.g., "admin") |
 
----
+Example:
 
-## 📸 Screenshots
-
-### 🏠 Landing Page
-
-![Landing Page](https://i.postimg.cc/L61rZ8sV/ladning-page.png)
-
----
-
-### 📝 Lead Form
-
-![Lead Form](https://i.postimg.cc/hGpwqJCt/lead-form.png)
-
----
-
-### 📊 Admin Dashboard
-
-![Admin Dashboard](https://i.postimg.cc/9fb3FgQb/admin-page.png)
-
----
-
-
-## ✨ Features
-
-### Public Landing Page
-
-- Modern responsive UI
-- Hero section
-- Features section
-- Contact/Lead form
-- Client-side validation
-- Server-side validation
-- Stores submissions in MongoDB
-
-### Admin Dashboard
-
-- View all submitted leads
-- Search leads by name or email
-- Update lead status
-  - New
-  - Contacted
-  - Closed
-- Dashboard summary cards
-- Loading & empty states
-- Responsive design
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-
-- React
-- Vite
-- Tailwind CSS
-- shadcn/ui
-- React Router
-- Axios
-- Lucide React
-
-### Backend
-
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-
-### Deployment
-
-- Frontend → Vercel
-- Backend → Render
-- Database → MongoDB Atlas
-
----
-
-## 📁 Project Structure
-
-```text
-ClientSync
-│
-├── backend
-│   ├── controllers
-│   ├── models
-│   ├── routes
-│   ├── config
-│   ├── server.js
-│   └── package.json
-│
-├── frontend
-│   ├── src
-│   ├── components
-│   ├── pages
-│   ├── hooks
-│   ├── services
-│   ├── assets
-│   └── package.json
-│
-└── README.md
-```
-
----
-
-## ⚙️ Installation
-
-### Clone the repository
-
-```bash
-git clone https://github.com/your-username/ClientSync.git
-cd ClientSync
-```
-
----
-
-### Backend Setup
-
-```bash
-cd backend
-npm install
-```
-
-Create a `.env` file:
-
-```env
-PORT=3000
-MONGO_URI=your_mongodb_connection_string
-```
-
-Run the backend:
-
-```bash
-npm run dev
-```
-
----
-
-### Frontend Setup
-
-```bash
-cd frontend
-npm install
-```
-
-Create a `.env` file:
-
-```env
-VITE_API_BASE_URL=http://localhost:3000/api
-```
-
-Run the frontend:
-
-```bash
-npm run dev
-```
-
----
-
-## 📡 API Endpoints
-
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/api/leads` | Create a new lead |
-| GET | `/api/leads` | Get all leads |
-| GET | `/api/leads?search=` | Search leads |
-| PATCH | `/api/leads/:id` | Update lead status |
-
----
-
-## 🗄️ Database Schema
-
-```javascript
+```json
 {
-  name: String,
-  email: String,
-  budget: String,
-  message: String,
-  status: "New" | "Contacted" | "Closed",
-  createdAt: Date
+  "email": "admin@gmail.com",
+  "password": "<hashed-password>",
+  "role": "admin"
 }
 ```
 
 ---
 
-## 🎯 Validation
+### Lead Model
 
-### Client Side
+The `Lead` model stores information submitted through the public lead form.
 
-- Required fields
-- Valid email format
-- Budget selection required
-- Message validation
+| Field | Type | Description |
+|-------|------|-------------|
+| name | String | Lead's name |
+| email | String | Lead's email |
+| budget | String | Estimated budget |
+| message | String | Additional message |
+| status | String | Lead status (New, Contacted, Closed) |
+| createdAt | Date | Automatically generated timestamp |
 
-### Server Side
+Example:
 
-- Request validation
-- Required fields
-- Email validation
-- Budget enum validation
-- Error handling
-
----
-
-## 📱 Responsive Design
-
-The application is fully responsive and optimized for:
-
-- Desktop
-- Tablet
-- Mobile
-
----
-
-## 🚀 Deployment
-
-### Frontend
-
-- Hosted on **Vercel**
-
-### Backend
-
-- Hosted on **Render**
-
-### Database
-
-- **MongoDB Atlas**
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "budget": "$5,000",
+  "message": "Interested in web development.",
+  "status": "New",
+  "createdAt": "2026-07-24T12:00:00Z"
+}
+```
 
 ---
 
-## 👨‍💻 Author
+## 🔐 Authentication Approach
 
-**Abhishek Singh**
+The application secures the admin dashboard using **JWT (JSON Web Tokens)** and **bcrypt**.
 
-- GitHub: https://github.com/Abhishek-9011
-- LinkedIn: https://www.linkedin.com/in/abhishek-9011-singh/
+### Authentication Flow
 
----
+1. An administrator logs in using their email and password.
+2. The backend verifies the email exists in the database.
+3. The entered password is compared with the stored hashed password using **bcrypt**.
+4. If the credentials are valid, the server generates a JWT containing the user's ID.
+5. The JWT is returned to the frontend.
+6. The frontend stores the token in **localStorage**.
+7. An Axios interceptor automatically includes the token in the `Authorization` header for protected requests.
+8. Backend middleware verifies the JWT before allowing access to protected routes.
 
-## 📄 License
+Protected routes include:
 
-This project was built for educational purposes as part of a Full Stack Development assessment.
+- `GET /api/leads`
+- `PATCH /api/leads/:id`
+
+The lead submission endpoint (`POST /api/leads`) remains public so visitors can submit leads without authentication.
+
+This approach ensures that only authenticated administrators can view or modify lead data while keeping the public lead submission form accessible.
