@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
 import { login } from "../services/authService";
-
+import { loginSchema } from "../validations/authValidation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 
 const Login = () => {
+    const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -27,32 +28,54 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
 
-    try {
-      const response = await login(formData);
+  setErrors((prev) => ({
+    ...prev,
+    [name]: "",
+  }));
+};
 
-      localStorage.setItem("token", response.data.token);
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-      toast.success("Login successful!");
+  // Validate form
+  const result = loginSchema.safeParse(formData);
 
-      navigate("/admin");
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Login failed");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (!result.success) {
+    const fieldErrors = {};
+
+result.error.issues.forEach((issue) => {
+  fieldErrors[issue.path[0]] = issue.message;
+});
+
+setErrors(fieldErrors);
+    return;
+  }
+
+  setErrors({});
+  setIsLoading(true);
+
+  try {
+    const response = await login(formData);
+
+    localStorage.setItem("token", response.data.token);
+
+    toast.success("Login successful!");
+
+    navigate("/admin");
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Login failed");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen w-full bg-white lg:flex">
@@ -99,53 +122,58 @@ const Login = () => {
                 noValidate
               >
                 {/* Email */}
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-neutral-700">Email</Label>
+              <div className="space-y-2">
+  <Label htmlFor="email">Email</Label>
 
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@company.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="h-12 rounded-lg bg-neutral-50 border-neutral-200 focus-visible:ring-orange-500"
-                  />
-                </div>
+  <Input
+    id="email"
+    name="email"
+    type="email"
+    value={formData.email}
+    onChange={handleChange}
+    className={`h-12 rounded-lg bg-neutral-50 ${
+      errors.email ? "border-red-500" : "border-neutral-200"
+    }`}
+  />
+
+  {errors.email && (
+    <p className="text-sm text-red-500">{errors.email}</p>
+  )}
+</div>
 
                 {/* Password */}
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-neutral-700">Password</Label>
+             <div className="space-y-2">
+  <Label htmlFor="password">Password</Label>
 
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      autoComplete="current-password"
-                      placeholder="Enter your password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      className="h-12 rounded-lg bg-neutral-50 pr-12 border-neutral-200 focus-visible:ring-orange-500"
-                    />
+  <div className="relative">
+    <Input
+      id="password"
+      name="password"
+      type={showPassword ? "text" : "password"}
+      value={formData.password}
+      onChange={handleChange}
+      className={`h-12 rounded-lg bg-neutral-50 pr-12 ${
+        errors.password ? "border-red-500" : "border-neutral-200"
+      }`}
+    />
 
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-neutral-400 hover:text-orange-600 transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-neutral-400 hover:text-orange-600"
+    >
+      {showPassword ? (
+        <EyeOff className="h-5 w-5" />
+      ) : (
+        <Eye className="h-5 w-5" />
+      )}
+    </button>
+  </div>
 
+  {errors.password && (
+    <p className="text-sm text-red-500">{errors.password}</p>
+  )}
+</div>
                 {/* Login Button */}
                 <Button
                   type="submit"
