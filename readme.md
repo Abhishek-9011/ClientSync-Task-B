@@ -10,7 +10,7 @@ The `User` model is used for administrator authentication.
 |-------|------|-------------|
 | email | String | Admin email address (unique) |
 | password | String | Hashed password using bcrypt |
-| role | String | User role (e.g., "admin") |
+
 
 Example:
 
@@ -18,7 +18,6 @@ Example:
 {
   "email": "admin@gmail.com",
   "password": "<hashed-password>",
-  "role": "admin"
 }
 ```
 
