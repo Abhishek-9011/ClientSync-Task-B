@@ -17,12 +17,12 @@ const createLeadSchema = z.object({
     .trim()
     .min(1, "Budget is required"),
 
-  message: z
+    message: z
     .string()
     .trim()
-    .min(5, "Message must be at least 5 characters"),
+    .min(5, "Message must be at least 5 characters")
+    .max(1000, "Message cannot exceed 1000 characters"),
 });
-
 const updateStatusSchema = z.object({
   status: z.enum(["New", "Contacted", "Qualified", "Lost"]),
 });

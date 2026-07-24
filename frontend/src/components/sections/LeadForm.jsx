@@ -58,11 +58,13 @@ export default function LeadForm() {
     next.budget = "Budget is required.";
   }
 
-  if (!form.message.trim()) {
-    next.message = "Message is required.";
-  } else if (form.message.trim().length < 5) {
-    next.message = "Message must be at least 5 characters.";
-  }
+ if (!form.message.trim()) {
+  next.message = "Message is required.";
+} else if (form.message.trim().length < 5) {
+  next.message = "Message must be at least 5 characters.";
+} else if (form.message.trim().length > 1000) {
+  next.message = "Message cannot exceed 1000 characters.";
+}
 
   setErrors(next);
 
