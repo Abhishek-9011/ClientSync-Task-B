@@ -39,19 +39,35 @@ export default function LeadForm() {
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [serverError, setServerError] = useState("");
 
-  const validate = () => {
-    const next = {};
-    if (!form.name.trim()) next.name = "Please enter your name.";
-    if (!form.email.trim()) {
-      next.email = "Please enter your email.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      next.email = "Please enter a valid email address.";
-    }
-    if (!form.budget) next.budget = "Please select a budget range.";
-    if (!form.message.trim()) next.message = "Tell us a little about your needs.";
-    setErrors(next);
-    return Object.keys(next).length === 0;
-  };
+   const validate = () => {
+  const next = {};
+
+  if (!form.name.trim()) {
+    next.name = "Name is required.";
+  } else if (form.name.trim().length < 2) {
+    next.name = "Name must be at least 2 characters.";
+  }
+
+  if (!form.email.trim()) {
+    next.email = "Email is required.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    next.email = "Invalid email address.";
+  }
+
+  if (!form.budget.trim()) {
+    next.budget = "Budget is required.";
+  }
+
+  if (!form.message.trim()) {
+    next.message = "Message is required.";
+  } else if (form.message.trim().length < 5) {
+    next.message = "Message must be at least 5 characters.";
+  }
+
+  setErrors(next);
+
+  return Object.keys(next).length === 0;
+};
 
   const handleChange = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
