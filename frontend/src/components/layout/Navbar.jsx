@@ -110,11 +110,19 @@ export default function Navbar() {
                 </Link>
               )
             )}
-            <Button asChild className="w-full">
-              <a href="/#contact" onClick={() => setOpen(false)}>
-                Get Started
-              </a>
-            </Button>
+           <div className="flex flex-col gap-3">
+  <Button asChild variant="outline" className="w-full">
+    <Link to="/login" onClick={() => setOpen(false)}>
+      Admin Login
+    </Link>
+  </Button>
+
+  <Button asChild className="w-full">
+    <a href="/#contact" onClick={() => setOpen(false)}>
+      Get Started
+    </a>
+  </Button>
+</div>
           </div>
         </div>
       )}
