@@ -1,4 +1,5 @@
 const express = require("express");
+const authenticate = require("../middlewares/authMiddleware");
 
 const {
     createLead,
@@ -8,10 +9,13 @@ const {
 
 const router = express.Router();
 
-router.route("/")
-    .post(createLead)
-    .get(getLeads);
 
-router.patch("/:id", updateLeadStatus);
+router.post("/", createLead);
+
+
+router.get("/", authenticate, getLeads);
+
+
+router.patch("/:id", authenticate, updateLeadStatus);
 
 module.exports = router;
